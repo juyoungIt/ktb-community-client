@@ -1,7 +1,7 @@
 # 정의할 워크 플로우의 이름
 name: Leum Client CI/CD
 
-# 워크플로우르 실행할 이벤트 결정 및 매핑
+# 워크플로우를 실행할 이벤트 결정 및 매핑
 on:
   push:
     branches:
@@ -77,9 +77,11 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/leum-client:latest
             ${{ steps.login-ecr.outputs.registry }}/leum-client:${{ github.sha }}
 
-  deploy: # 배포를 수행하는 단계
+  deploy-by-github-action: # Github Action 으로 CD를 처리하는 경우
     needs: build-and-push-image # 빌드 및 push가 이뤄진 이후에 수행함
-    if: github.event_name == 'push' # PR 자체에 대해서는 해당 이벤트를 발행하지 않음
+    # 조건 1. PR 자체에 대해서는 해당 이벤트를 발행하지 않음
+    # 조건 2. Repository Variable 값이 'GITHUB' 일 때만 해당 작업을 실행함
+    if: github.event_name == 'push' && vars.DEPLOY_TARGET == 'GITHUB'
     runs-on: ubuntu-latest # 최신 AMD64 우분투에서 실행될 수 있도록 설정
     steps:
       # 1. 소스코드를 체크아웃
@@ -103,4 +105,18 @@ jobs:
           aws autoscaling start-instance-refresh \
             --auto-scaling-group-name ${{ secrets.ASG_NAME }} \
             --strategy Rolling \
-            --preferences '{"MinHealthyPercentage": 100, "InstanceWarmup": 300}'
+            --preferences '{"MinHealthyPercentage": 100, "InstanceWarmup": 100}'
+
+  deploy-by-jenkins: # Jenkins 로 CD를 처리하는 경우
+    needs: build-and-push-image # 빌드 및 push가 이뤄진 이후에 수행함
+    # 조건 1. PR 자체에 대해서는 해당 이벤트를 발행하지 않음
+    # 조건 2. Repository Variable 값이 'JENKINS' 일 때만 해당 작업을 실행함
+    if: github.event_name == 'push' && vars.DEPLOY_TARGET == 'JENKINS'
+    runs-on: ubuntu-latest # 최신 AMD64 우분투에서 실행될 수 있도록 설정
+    steps:
+      # 1. Jenkins 에 배포수행 요청
+      - name: Trigger Jenkins Deploy
+        run: |
+          echo "Triggering Jenkins Job for Deployment..."
+          curl -f -v -X POST -u "${{ secrets.JENKINS_USER }}:${{ secrets.JENKINS_TOKEN }}" \
+            "${{ secrets.JENKINS_URL }}/job/leum-client-deploy/buildWithParameters?token=${{ secrets.JENKINS_JOB_TOKEN }}&IMAGE_TAG=${{ github.sha }}"
