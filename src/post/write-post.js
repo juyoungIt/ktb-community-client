@@ -28,23 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, []);
 
-    // ... (Main Image Badge 관련 로직은 기존 유지 - 생략) ...
-    // 여기에 Badge Observer 코드 그대로 사용하세요.
-
     // 2. '게시글 작성' 버튼 리스너
     writePostForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        // 업로더에서 현재 리스트 가져오기
+        // 1. 업로더에서 현재 리스트 가져오기
         const currentImages = uploader.getFinalImageList();
 
-        // 1. 검증: 이미지 필수 체크
-        if (currentImages.length === 0) {
-            await showConfirmModal('이미지 필수', '이미지를 1장 이상 추가해주세요.');
-            return;
-        }
-
-        // 2. 검증: 아직 업로드 중인 이미지가 있는지 체크 (이중 방어)
+        // 2. 아직 업로드 중인 이미지가 있는지 체크
         if (uploader.isUploading() || currentImages.some(img => img.uploading)) {
             await showConfirmModal('업로드 대기', '이미지 업로드가 진행 중입니다. 잠시만 기다려주세요.');
             return;
@@ -58,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         try {
-            // * 핵심 변경: 별도의 이미지 업로드 과정 없이 ID만 추출 *
             const finalPostImages = currentImages.map(img => ({
                 imageId: img.imageId,
                 sequence: img.sequence

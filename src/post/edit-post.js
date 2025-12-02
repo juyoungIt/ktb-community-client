@@ -38,8 +38,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }, postImages);
 
-    // ... (Main Image Badge Observer 로직 유지 - 생략) ...
-
     // 3. 수정 버튼 핸들러
     editPostForm.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -59,7 +57,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
 
         try {
-            // * 핵심 변경: 복잡한 구분 로직 없이 ID만 추출 *
             // 기존 이미지든 새 이미지든 uploader가 imageId를 가지고 있음.
             const finalPostImages = currentImages.map(img => ({
                 imageId: img.imageId,
