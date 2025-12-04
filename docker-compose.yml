@@ -8,6 +8,7 @@ services:
 #      dockerfile: Dockerfile # 명시적으로 Dockerfile 명을 지정
     ports:
       - "80:80" # 기본 HTTP 포트번호로 매핑
+      - "8080:8080" # 모니터링 용 포트
     restart: always # 예기치 않은 컨테이너 종료 시 재시작 시도
     env_file: # 필요한 환경변수 주입
       - .env

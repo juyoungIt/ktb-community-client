@@ -28,8 +28,12 @@ FROM nginx:stable-alpine AS production
 # 빌드 결과물인 정적 파일 복사
 COPY --from=build /leum-client/dist /usr/share/nginx/html
 
+# 추가 설정파일 주입
+COPY ./nginx/stub_status.conf /etc/nginx/conf.d/stub_status.conf
+
 # nginx 권한 설정
 RUN chown -R nginx:nginx /usr/share/nginx/html
 
 # 포트 노출
 EXPOSE 80
+EXPOSE 8080
