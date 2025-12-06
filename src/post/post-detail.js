@@ -54,8 +54,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const carouselInner = document.getElementById('carousel-inner-container');
+        const carouselContainer = document.getElementById('post-images-carousel');
         post.postImages.sort((a, b) => a.sequence - b.sequence);
         if (post.postImages && post.postImages.length > 0) {
+            carouselContainer.classList.remove('d-none'); // 숨김 해제 (보여주기)
             carouselInner.innerHTML = '';
             post.postImages.forEach((image, index) => {
                 const item = document.createElement('div');
@@ -64,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 carouselInner.appendChild(item);
             });
         } else {
-            document.getElementById('post-images-carousel').style.display = 'none';
+            carouselContainer.classList.add('d-none');
         }
 
         if (userProfile.payload.email === post.writer.email) {
