@@ -28,7 +28,13 @@ body {
     font-weight: 600; /* 표준 굵기 */
 }
 
-/* 5. 캐러셀 (이미지) 스타일 */
+#post-content {
+    /* 1. 표준 속성: 단어가 너무 길어 영역을 넘치면 강제로 줄을 바꿈 */
+    overflow-wrap: break-word;
+    /* 2. 일부 브라우저 호환성을 위한 속성 */
+    word-break: break-word;
+}
+
 .post-image-placeholder {
     width: 100%;
     padding-top: 56.25%; /* 16:9 비율 */
