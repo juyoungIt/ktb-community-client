@@ -344,20 +344,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 credentials: 'include'
             });
             const data = await response.json();
-
             if (!data.isSuccess) {
                 await showConfirmModal('오류 발생', data.message);
             }
-
             isLiked = !isLiked; // 상태 토글
-
             likeBox.classList.toggle('liked', isLiked);
-
             requestAnimationFrame(() => {
-                const currentCount = parseInt(likeCountEl.textContent);
-                likeCountEl.innerHTML = isLiked ? currentCount + 1 : currentCount - 1;
+                likeCountEl.innerHTML = parseInt(data.payload);
             });
-
         } catch (error) {
             await showConfirmModal('오류 발생', '좋아요 처리에 실패했습니다.');
         } finally {
